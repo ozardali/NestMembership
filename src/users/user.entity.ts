@@ -5,7 +5,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Subscription } from '../subscriptions/subscriptions.entity';
 
 @Entity('users')
 export class User {
@@ -30,6 +32,9 @@ export class User {
   @Column({ default: 'user' })
   role: string;
 
+  @Column({ nullable: true })
+  stripeCustomerId: string;
+
   @Column()
   @Exclude()
   password: string;
@@ -47,4 +52,7 @@ export class User {
     nullable: true,
   })
   updated_at: Date;
+
+  @OneToMany(() => Subscription, (subscription) => subscription.user)
+  subscriptions: Subscription[];
 }

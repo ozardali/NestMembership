@@ -2,9 +2,15 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
+import { UserModule } from './users/user.module';
+import { AdminController } from './admin/admin.controller';
+import { RoleGuard } from './auth/role.guard';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
+  controllers: [AdminController],
+  providers: [RoleGuard],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -25,6 +31,8 @@ import { UserModule } from './user/user.module';
     }),
     UserModule,
     AuthModule,
+    SubscriptionsModule,
+    PaymentsModule,
   ],
 })
 export class AppModule {}

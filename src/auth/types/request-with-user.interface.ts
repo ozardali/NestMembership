@@ -5,5 +5,6 @@ export interface RequestWithUser extends Request {
     userId: number;
     email: string;
     role: string;
+    stripeCustomerId?: string;
   };
 }

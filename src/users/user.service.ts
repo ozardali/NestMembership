@@ -28,6 +28,10 @@ export class UserService {
     return this.userRepository.findOne({ where: { email } });
   }
 
+  async updateUser(userId: number, updateData: Partial<User>) {
+    await this.userRepository.update(userId, updateData);
+  }
+
   async updateProfile(
     userId: number,
     updateData: Partial<User>,
@@ -40,5 +44,16 @@ export class UserService {
       throw new Error('User not found');
     }
     return plainToClass(User, updatedUser);
+  }
+
+  async findAllUsers(): Promise<User[]> {
+    return this.userRepository.find();
+  }
+
+  async findSubscribedUsers(): Promise<User[]> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.subscriptions', 'subscription')
+      .getMany();
   }
 }
