@@ -13,12 +13,14 @@ import { RequestWithUser } from '../auth/types/request-with-user.interface';
 import { User } from './user.entity';
 import { plainToInstance } from 'class-transformer';
 import { StripeService } from '../payments/stripe.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly stripeService: StripeService,
+    private readonly configService: ConfigService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -55,7 +57,8 @@ export class UserController {
       );
     }
 
-    const returnUrl = 'http://localhost:3000/account';
+    const returnUrl =
+      this.configService.get<string>('FRONTEND_URL') + '/account';
     return this.stripeService.createCustomerPortalSession(
       user.stripeCustomerId,
       returnUrl,
