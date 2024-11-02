@@ -24,7 +24,9 @@ export class StripeService {
       );
     }
     this.stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-09-30.acacia',
+      apiVersion: this.configService.get<string>('STRIPE_API_VERSION') as
+        | '2024-09-30.acacia'
+        | undefined,
     });
   }
 
@@ -42,7 +44,6 @@ export class StripeService {
     const userId = parseInt(session.metadata.userId);
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (user && !user.stripeCustomerId) {
-      console.log(user, 'burda');
       user.stripeCustomerId = customerId;
       await this.userRepository.save(user);
     }
@@ -156,8 +157,10 @@ export class StripeService {
       ],
       mode: 'subscription',
       success_url:
-        'http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'http://localhost:3000/checkout/cancel',
+        this.configService.get<string>('FRONTEND_URL') +
+        '/checkout/success?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url:
+        this.configService.get<string>('FRONTEND_URL') + '/checkout/cancel',
       metadata: { userId },
     });
 
