@@ -1,11 +1,11 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   Put,
   Req,
   UseGuards,
-  Body,
-  BadRequestException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserService } from './user.service';
@@ -46,6 +46,7 @@ export class UserController {
     const userId = req.user.userId;
     return this.userService.updateProfile(userId, updateData);
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('subscription-portal')
   async getCustomerPortal(@Req() req: RequestWithUser) {
@@ -59,9 +60,10 @@ export class UserController {
 
     const returnUrl =
       this.configService.get<string>('FRONTEND_URL') + '/account';
-    return this.stripeService.createCustomerPortalSession(
+    const portalUrl = await this.stripeService.createCustomerPortalSession(
       user.stripeCustomerId,
       returnUrl,
     );
+    return { url: portalUrl };
   }
 }
