@@ -45,4 +45,25 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+  async validateToken(user: any) {
+    try {
+      const currentUser = await this.userService.findUserById(user.userId);
+      if (!currentUser) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      return {
+        isValid: true,
+        user: {
+          id: currentUser.id,
+          email: currentUser.email,
+          name: currentUser.name,
+          role: currentUser.role,
+        },
+      };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }
